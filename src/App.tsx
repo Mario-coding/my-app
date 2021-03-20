@@ -16,10 +16,10 @@ import './App.css';
 
 
 class App extends React.Component <IAppProps, IAppState> {
-  constructor(props) {
+  constructor(props: IAppProps) {
     super(props);
     this.state = {
-      showTable: true;
+      showTable: true,
   }
 }
 
