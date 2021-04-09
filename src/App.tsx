@@ -1,51 +1,79 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { createIncrementalProgram } from 'typescript';
 
-interface IAppState {
-  fullname: string;
-  age: string;
+const App = () => {
+  const [timer, setTimer] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const increment: any = useRef(null);
+
+
+const handleStart = () => {
+  setIsActive(true)
+  increment.current = setInterval(() => {
+  setTimer((timer) => timer + 1)
+  }, 10)
 }
 
-class App extends React.Component<{}, IAppState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      fullname: '',
-      age: '',
-    }
-  }
+const handlePause = () => {
+  setIsActive(false)
+  clearInterval(increment.current)
+}
 
-  handleBtnClick = () => {
-    alert(`${this.state.fullname} ${this.state.age}`)
-  }
+const handleResume = () => {
+  setIsActive(true)
+  increment.current = setInterval(() => {
+  setTimer((timer) => timer + 1)
+  }, 10)
+}
 
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = event.target;
-    const { value } = event.target;
+const handleReset = () => {
+  clearInterval(increment.current);
+  setIsActive(true)
+  setTimer(0);
+}
 
-    const newState = { ...this.state };
-    newState[name] = value;
+const formatTime = () => {
+  const centiSeconds = `0${timer % 100}`.slice(-2)
+  const seconds = `0${Math.floor(timer / 100) % 60}`.slice(-2)
+  const minutes = `0${Math.floor(timer / 6000) % 60}`.slice(-2)
 
-    this.setState(newState);  
-  }
+  return `${minutes} : ${seconds} : ${centiSeconds}`
+}
 
-  public render() {
+const renderingBtn = () => {
+  if (!isActive && timer === 0) {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <form>
-            <input name="fullname" value={this.state.fullname} placeholder="type fullname here" onChange={this.handleChange} />
-            <br/>
-            <input name="age" value={this.state.age} placeholder="type age here" onChange={this.handleChange} />
-            <br/>
-            <button type="button" onClick={this.handleBtnClick}>SAVE</button>
-          </form>
-       </header>
-      </div>
+      <button onClick={handleStart}>Start</button>
+    )
+  } else if (!isActive && timer > 0) {
+    return (
+      <>
+      <button onClick={handleResume}>Resume</button>
+      <button onClick={handleReset}>Reset</button>
+      </>
     )
   }
+  return (
+    <>
+    <button onClick={handlePause}>Pause</button>
+    </>
+  )
+}
+
+return (
+  <div className="App">
+    <div className="Stopwatch">
+      <div className="Stopwatch-header">Stopwatch</div>
+      <div className="Stopwatch-display">
+        {formatTime()}
+      </div>
+      {renderingBtn()}
+    </div>
+  </div>
+)
+
 }
 
 export default App;
